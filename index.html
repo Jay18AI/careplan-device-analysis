@@ -13,13 +13,16 @@
 </head>
 <body>
   <div id="root"></div>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script type="text/babel">
+
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
+
+  <script type="text/babel" data-presets="react">
     const { useState, useMemo } = React;
-    const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend, CartesianGrid } = Recharts;
+    const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+            PieChart, Pie, Cell, LineChart, Line, Legend, CartesianGrid } = Recharts;
 
     const CARE_PLAN_RAW = [
   ["DELHI","Field","Doctor Basic","Obesity",3,"dr mayank uppal","B2C","Jan_26","Anshul Singh","Gunjan Juneja",0,0,0,"",0,0,4000],
@@ -504,7 +507,7 @@ const CHART_COLORS = Object.values(PALETTE);
 const CGM_COLORS = { Abbott: "#3B82F6", Tracky: "#10B981", Libre2: "#F59E0B", None: "#94A3B8" };
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-const fmt = (n) => n >= 100000 ? `₹${(n/100000).toFixed(1)}L` : n >= 1000 ? `₹${(n/1000).toFixed(0)}K` : `₹${n}`;
+const fmt = (n) => n >= 100000 ? '\u20b9' + (n/100000).toFixed(1) + 'L' : n >= 1000 ? '\u20b9' + (n/1000).toFixed(0) + 'K' : '\u20b9' + n;
 const groupBy = (arr, key) => arr.reduce((acc, item) => {
   const k = typeof key === "function" ? key(item) : item[key];
   if (!acc[k]) acc[k] = [];
@@ -519,7 +522,7 @@ const countBy = (arr, key) => {
 
 // ─── STAT CARD ────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, sub, color }) => (
-  <div style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${color}30`, borderRadius: 12, padding: "16px 20px", borderLeft: `4px solid ${color}` }}>
+  <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid " + color + "30", borderRadius: 12, padding: "16px 20px", borderLeft: "4px solid " + color }}>
     <div style={{ color: "#94A3B8", fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
     <div style={{ color: "#F1F5F9", fontSize: 26, fontWeight: 700, lineHeight: 1 }}>{value}</div>
     {sub && <div style={{ color: color, fontSize: 12, marginTop: 4 }}>{sub}</div>}
@@ -653,7 +656,7 @@ function Dashboard() {
               style={{ padding:"10px 18px", border:"none", cursor:"pointer", fontSize:13, fontWeight:600, borderRadius:"8px 8px 0 0",
                 background: activeTab===t.id ? "rgba(0,201,167,0.15)" : "transparent",
                 color: activeTab===t.id ? PALETTE.teal : "#64748B",
-                borderBottom: activeTab===t.id ? `2px solid ${PALETTE.teal}` : "2px solid transparent" }}>
+                borderBottom: activeTab===t.id ? "2px solid " + PALETTE.teal : "2px solid transparent" }}>
               {t.label}
             </button>
           ))}
@@ -666,12 +669,12 @@ function Dashboard() {
           <div>
             {/* KPI Cards */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(160px,1fr))", gap:14, marginBottom:24 }}>
-              <StatCard label="Total Records" value={filtered.length.toLocaleString()} sub={`+${growthPct}% MoM`} color={PALETTE.teal} />
+              <StatCard label="Total Records" value={filtered.length.toLocaleString()} sub={"+"+growthPct+"% MoM"} color={PALETTE.teal} />
               <StatCard label="Total Revenue" value={fmt(totalRevenue)} sub="Invoice amount" color={PALETTE.coral} />
               {activeSheet==="carePlan" && <StatCard label="Carepay Amount" value={fmt(totalCarepay)} sub="3rd party financed" color={PALETTE.purple} />}
               <StatCard label="Total Discount" value={fmt(totalDiscount)} sub="Given to patients" color={PALETTE.amber} />
               <StatCard label="Total CGMs" value={totalCGM.toLocaleString()} sub="Sensors issued" color={PALETTE.blue} />
-              <StatCard label="BCA Attachment" value={`${bcaPct}%`} sub={`${withBCA} plans`} color={PALETTE.indigo} />
+              <StatCard label="BCA Attachment" value={bcaPct+"%"} sub={withBCA+" plans"} color={PALETTE.indigo} />
               <StatCard label="Avg Invoice" value={fmt(avgInvoice)} sub="Per patient" color={PALETTE.rose} />
             </div>
 
@@ -712,7 +715,7 @@ function Dashboard() {
               <ChartCard title="Team Split">
                 <ResponsiveContainer width="100%" height={180}>
                   <PieChart>
-                    <Pie data={byTeam} cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name" label={({name,count})=>`${name}: ${count}`} labelLine={false} fontSize={10}>
+                    <Pie data={byTeam} cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name" label={({name,count})=>name+": "+count} labelLine={false} fontSize={10}>
                       {byTeam.map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
                     </Pie>
                     <Tooltip content={<TT/>} />
@@ -725,7 +728,7 @@ function Dashboard() {
                   <ResponsiveContainer width="100%" height={180}>
                     <PieChart>
                       <Pie data={byPlanType} cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name"
-                        label={({ name, count, percent }) => `${name}: ${(percent*100).toFixed(0)}%`} labelLine fontSize={10}>
+                        label={({ name, count, percent }) => name+": "+(percent*100).toFixed(0)+"%"} labelLine fontSize={10}>
                         {byPlanType.map((_, i) => <Cell key={i} fill={[PALETTE.teal, PALETTE.coral][i%2]} />)}
                       </Pie>
                       <Tooltip content={<TT/>} />
@@ -739,7 +742,7 @@ function Dashboard() {
                   <PieChart>
                     <Pie data={activeSheet==="carePlan" ? byPlanCat : [{name:"Smart CGM", count:filtered.length}]}
                       cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name"
-                      label={({name,count})=>`${name}: ${count}`} labelLine fontSize={9}>
+                      label={({name,count})=>name+": "+count} labelLine fontSize={9}>
                       {(activeSheet==="carePlan" ? byPlanCat : [{name:"Smart CGM"}]).map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
                     </Pie>
                     <Tooltip content={<TT/>} />
@@ -951,7 +954,7 @@ function Dashboard() {
                           <span style={{ color:item.color, fontWeight:700, fontSize:14 }}>{fmt(item.val)}</span>
                         </div>
                         <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:4, height:8 }}>
-                          <div style={{ background:item.color, width:`${Math.min(100,item.val/totalRevenue*100)}%`, height:8, borderRadius:4 }} />
+                          <div style={{ background:item.color, width:Math.min(100,item.val/totalRevenue*100)+"%", height:8, borderRadius:4 }} />
                         </div>
                       </div>
                     ))}
@@ -979,7 +982,7 @@ function Dashboard() {
                 <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
                     <Pie data={cgmDist} cx="50%" cy="50%" outerRadius={90} dataKey="value" nameKey="name"
-                      label={({name,value,percent})=>`${name}: ${value} (${(percent*100).toFixed(0)}%)`} fontSize={11}>
+                      label={({name,value,percent})=>name+": "+value+" ("+(percent*100).toFixed(0)+"%)"} fontSize={11}>
                       {cgmDist.map((d,i)=><Cell key={i} fill={CGM_COLORS[d.name]||CHART_COLORS[i%CHART_COLORS.length]} />)}
                     </Pie>
                     <Tooltip content={<TT/>} />
@@ -1067,8 +1070,8 @@ function Dashboard() {
 }
 
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<Dashboard />);
+    const domRoot = ReactDOM.createRoot(document.getElementById('root'));
+    domRoot.render(React.createElement(Dashboard));
   </script>
 </body>
 </html>
