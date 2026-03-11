@@ -1,30 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Health Analytics Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0F172A; }
-    select option { background: #1E293B; color: #CBD5E1; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Health Analytics Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0F172A;color:#F1F5F9;min-height:100vh}
+.header{background:linear-gradient(135deg,#1E293B,#0F172A);border-bottom:1px solid rgba(255,255,255,.08);padding:20px 28px 0}
+.hrow{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#F1F5F9}
+.logo span{color:#00C9A7}
+.sub{font-size:12px;color:#64748B;margin-top:3px}
+.toggle{display:flex;gap:8px}
+.tbtn{padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.tbtn.on{background:#00C9A7;color:#0F172A}
+.tbtn.off{background:rgba(255,255,255,.07);color:#94A3B8}
+.frow{display:flex;gap:12px;flex-wrap:wrap;padding-bottom:14px;align-items:center}
+.frow select{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#CBD5E1;padding:6px 12px;font-size:12px;cursor:pointer;outline:none}
+.frow select option{background:#1E293B}
+.rcount{margin-left:auto;color:#64748B;font-size:12px;font-weight:600}
+.tabs{display:flex;gap:2px}
+.tab{padding:10px 18px;border:none;cursor:pointer;font-size:13px;font-weight:600;border-radius:8px 8px 0 0;background:transparent;color:#64748B;border-bottom:2px solid transparent;transition:.15s}
+.tab.on{background:rgba(0,201,167,.12);color:#00C9A7;border-bottom-color:#00C9A7}
+.content{padding:24px 28px}
+.tp{display:none}.tp.on{display:block}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
+.kcard{border-radius:12px;padding:16px 20px;border-left:4px solid}
+.klabel{color:#94A3B8;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.kval{color:#F1F5F9;font-size:22px;font-weight:700;line-height:1.1}
+.ksub{font-size:11px;margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px}
+.cc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px 16px}
+.ct{color:#CBD5E1;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+canvas{display:block;max-width:100%}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.blbl{color:#94A3B8;font-size:11px;min-width:100px;max-width:100px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btrack{flex:1;background:rgba(255,255,255,.06);border-radius:4px;height:22px;position:relative;overflow:hidden}
+.bfill{height:100%;border-radius:4px;transition:width .3s}
+.bv{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;color:#F1F5F9;font-weight:700}
+.prow{display:flex;align-items:center;gap:16px}
+.pleg{display:flex;flex-direction:column;gap:7px}
+.pli{display:flex;align-items:center;gap:6px;font-size:11px;color:#94A3B8}
+.pdot{width:11px;height:11px;border-radius:2px;flex-shrink:0}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:8px 12px;color:#64748B;font-weight:700;font-size:10px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:#0F172A}
+.tbl td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tw{overflow:auto;max-height:420px;border-radius:8px}
+.mrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mlbl{color:#94A3B8;font-size:12px}
+.mval{font-weight:700;font-size:14px}
+.pb{background:rgba(255,255,255,.06);border-radius:4px;height:8px;margin-bottom:12px}
+.pf{height:100%;border-radius:4px}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}.blbl{min-width:65px;max-width:65px}}
+</style>
 </head>
 <body>
-  <div id="root"></div>
+<div class="header">
+  <div class="hrow">
+    <div><div class="logo"><span>◉</span> Health Analytics</div><div class="sub">Jan 2026 – Feb 2026 · Live Data</div></div>
+    <div class="toggle">
+      <button class="tbtn on" id="btn-cp" onclick="switchSheet('cp')">Care Plan</button>
+      <button class="tbtn off" id="btn-sc" onclick="switchSheet('sc')">Smart CGM</button>
+      <button class="tbtn off" id="btn-all" onclick="switchSheet('all')" style="background:rgba(255,255,255,.07);color:#94A3B8">Combined</button>
+    </div>
+  </div>
+  <div class="frow">
+    <select id="fm" onchange="applyFilters()"><option value="">All Months</option></select>
+    <select id="fs" onchange="applyFilters()"><option value="">All States</option></select>
+    <select id="fa" onchange="applyFilters()"><option value="">All AMs</option></select>
+    <select id="fb" onchange="applyFilters()"><option value="">All BDMs</option></select>
+    <span class="rcount" id="rc">Loading...</span>
+  </div>
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('ov',this)">Overview</button>
+    <button class="tab" onclick="switchTab('ge',this)">Geography</button>
+    <button class="tab" onclick="switchTab('sa',this)">Sales Team</button>
+    <button class="tab" onclick="switchTab('pr',this)">Product Mix</button>
+    <button class="tab" onclick="switchTab('cg',this)">CGM Analysis</button>
+    <button class="tab" onclick="switchTab('bdm',this)">BDM Deep Dive</button>
+  </div>
+</div>
+<div class="content">
+  <div class="tp on" id="tp-ov">
+    <div class="kgrid" id="kgrid"></div>
+    <div class="g2">
+      <div class="cc"><div class="ct">Monthly Trend</div><canvas id="cv-trend" height="200"></canvas></div>
+      <div class="cc"><div class="ct">By Condition</div><div id="d-cond"></div></div>
+    </div>
+    <div class="g3">
+      <div class="cc"><div class="ct">Team Split</div><div class="prow"><canvas id="cv-team" width="130" height="130"></canvas><div class="pleg" id="pl-team"></div></div></div>
+      <div class="cc" id="card-b2b"><div class="ct">B2B vs B2C</div><div class="prow"><canvas id="cv-b2b" width="130" height="130"></canvas><div class="pleg" id="pl-b2b"></div></div></div>
+      <div class="cc"><div class="ct">Plan Category</div><div class="prow"><canvas id="cv-cat" width="130" height="130"></canvas><div class="pleg" id="pl-cat"></div></div></div>
+    </div>
+  </div>
+  <div class="tp" id="tp-ge">
+    <div class="g2">
+      <div class="cc"><div class="ct">Top States – Count</div><div id="d-st-c"></div></div>
+      <div class="cc"><div class="ct">Top States – Revenue</div><div id="d-st-r"></div></div>
+    </div>
+    <div class="cc"><div class="ct">All States Detail</div><div class="tw"><table class="tbl" id="t-st"></table></div></div>
+  </div>
+  <div class="tp" id="tp-sa">
+    <div class="g2">
+      <div class="cc"><div class="ct">AM Performance – Count</div><div id="d-am-c"></div></div>
+      <div class="cc"><div class="ct">Top BDMs – Count</div><div id="d-bdm"></div></div>
+    </div>
+    <div class="cc"><div class="ct">AM Revenue Leaderboard</div><div class="tw"><table class="tbl" id="t-am"></table></div></div>
+  </div>
+  <div class="tp" id="tp-pr">
+    <div class="g2">
+      <div class="cc"><div class="ct">Duration – Count</div><canvas id="cv-dc" height="220"></canvas></div>
+      <div class="cc"><div class="ct">Duration – Revenue</div><canvas id="cv-dr" height="220"></canvas></div>
+    </div>
+    <div class="g2" id="pr-extra"></div>
+  </div>
+  <div class="tp" id="tp-cg">
+    <div class="kgrid" id="cgm-kgrid"></div>
+    <div class="g2">
+      <div class="cc"><div class="ct">CGM Type Distribution</div><div class="prow"><canvas id="cv-cgm-pie" width="160" height="160"></canvas><div class="pleg" id="pl-cgm"></div></div></div>
+      <div class="cc"><div class="ct">CGM by State – Top 8</div><canvas id="cv-cgm-st" height="240"></canvas></div>
+    </div>
+    <div class="g2">
+      <div class="cc"><div class="ct">CGM by Condition</div><canvas id="cv-cgm-co" height="220"></canvas></div>
+      <div class="cc"><div class="ct">Revenue by CGM Type</div><canvas id="cv-cgm-rv" height="220"></canvas></div>
+    </div>
+  </div>
 
-  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
+  <div class="tp" id="tp-bdm">
+    <div class="frow" style="margin-bottom:16px;padding-bottom:0">
+      <select id="fb2" onchange="renderBdm()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#CBD5E1;padding:8px 14px;font-size:13px;cursor:pointer;min-width:200px"><option value="">-- Select a BDM --</option></select>
+      <span id="bdm-summary" style="color:#64748B;font-size:12px;margin-left:8px"></span>
+    </div>
+    <div class="kgrid" id="bdm-kgrid"></div>
+    <div class="g2" style="margin-bottom:16px">
+      <div class="cc"><div class="ct">Plans by Duration</div><div id="bdm-dur"></div></div>
+      <div class="cc"><div class="ct">Device Attachment by Duration</div><canvas id="cv-bdm-dev" height="240"></canvas></div>
+    </div>
+    <div class="cc"><div class="ct">BDM Full Detail — Care Plan by Duration with Device & Invoice</div><div class="tw"><table class="tbl" id="t-bdm-detail"></table></div></div>
+    <div class="cc" style="margin-top:16px"><div class="ct">All Plans for this BDM</div><div class="tw"><table class="tbl" id="t-bdm-all"></table></div></div>
+  </div>
+</div>
+<script>
 
-  <script type="text/babel" data-presets="react">
-    const { useState, useMemo } = React;
-    const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-            PieChart, Pie, Cell, LineChart, Line, Legend, CartesianGrid } = Recharts;
-
-    const CARE_PLAN_RAW = [
+const CARE_PLAN_RAW = [
   ["DELHI","Field","Doctor Basic","Obesity",3,"dr mayank uppal","B2C","Jan_26","Anshul Singh","Gunjan Juneja",0,0,0,"",0,0,4000],
   ["DELHI","Field","Doctor Basic","Obesity",3,"dr mayank uppal","B2C","Jan_26","Anshul Singh","Gunjan Juneja",0,0,0,"",0,0,4000],
   ["MAHARASTRA","Field","Doctor Basic","Obesity",3,"Ravindra yadav","B2C","Jan_26","Humera Ansari","Rehan Turk",0,1,2,"Abbott",0,0,13000],
@@ -276,7 +398,7 @@
   ["DELHI","Field","MAMILY-PREGNANCY","Other",3,"Self Hunt","B2C","Feb_26","Saif Mohd","Gunjan Juneja",0,0,1,"Tracky",2,0,11500],
   ["DELHI","Field","MAMILY-PREGNANCY","Other",6,"Self Hunt","B2C","Feb_26","Sumit Bhargava","Gunjan Juneja",0,0,0,"",0,0,6500],
 ];
-    const SMART_CGM_RAW = [
+const SMART_CGM_RAW = [
   ["MAHARASTRA","Field","Diabetes",1,"Dr.Anuradha desai","Jan_26","Dixit Bharat Vadher","Mohammad Gayasuddin Dasadia",0,0,2,"Abbott",0,10500],
   ["MAHARASTRA","Inside Sales","Diabetes",1,"Self Hunt","Jan_26","Rahul Kumar Singhal","Shanta S",0,0,1,"Tracky",1,5000],
   ["TAMIL NADU","Field","Diabetes",1,"Self Hunt","Jan_26","Balaji M","Muzammil Shafique Shafique",603,0,1,"Tracky",2,9397],
@@ -476,602 +598,488 @@
   ["MAHARASTRA","Field","Obesity",1,"Abdul Rahim","Feb_26","Mohammed Rehan Meer","Mohammad Gayasuddin Dasadia",0,0,0,"Tracky",3,10900],
 ];
 
-    // ─── PARSE TO OBJECTS ────────────────────────────────────────────────────────
-const parseCPRow = (r) => ({
-  state: r[0], team: r[1], planName: r[2], condition: r[3] || "Other",
-  duration: r[4], endorser: r[5], planType: r[6], month: r[7],
-  bdm: r[8], am: r[9], discount: r[10]||0, bcaInPlan: r[11]||0,
-  cgmCount: r[12]||0, cgmType: r[13]||"None", trackySensors: r[14]||0,
-  carepay: r[15]||0, invoice: r[16]||0,
-  planCategory: r[2].startsWith("MAMILY") ? "Mamily" : r[2].startsWith("Comprehensive") ? "Comprehensive" : r[2].startsWith("Doctor") ? "Doctor" : "Other",
-});
 
-const parseSCRow = (r) => ({
-  state: r[0], team: r[1], condition: r[2]||"Other",
-  duration: r[3], endorser: r[4], month: r[5],
-  bdm: r[6], am: r[7], discount: r[8]||0, bcaInPlan: r[9]||0,
-  cgmCount: r[10]||0, cgmType: r[11]||"None", trackySensors: r[12]||0,
-  invoice: r[13]||0,
-});
+// ── HELPERS ──────────────────────────────────────────────────────────
+const C=['#00C9A7','#FF6B6B','#FFD93D','#4ECDC4','#C084FC','#818CF8','#FB7185','#A3E635','#FB923C','#38BDF8'];
+const CGMC={Abbott:'#3B82F6',Tracky:'#10B981',Libre2:'#F59E0B'};
+function fmt(n){return n>=1e5?'\u20b9'+(n/1e5).toFixed(1)+'L':n>=1000?'\u20b9'+(n/1000).toFixed(0)+'K':'\u20b9'+Math.round(n);}
+function sumBy(a,k){return a.reduce((s,i)=>s+(i[k]||0),0);}
+function groupBy(a,k){const g={};a.forEach(i=>{const v=typeof k==='function'?k(i):i[k];if(!g[v])g[v]=[];g[v].push(i);});return g;}
+function countBy(a,k){const g=groupBy(a,k);return Object.entries(g).map(([n,v])=>({name:n,count:v.length,rev:sumBy(v,'invoice')})).sort((a,b)=>b.count-a.count);}
+function uniq(a,k){return[...new Set(a.map(i=>i[k]).filter(Boolean))].sort();}
+function el(id){return document.getElementById(id);}
 
-const CP = CARE_PLAN_RAW.map(parseCPRow);
-const SC = SMART_CGM_RAW.map(parseSCRow);
+// ── PARSE ────────────────────────────────────────────────────────────
+function parseCPRow(r){
+  const pn=r[2]||'';
+  return{state:r[0],team:r[1],planName:pn,condition:r[3]||'Other',
+    duration:r[4],endorser:r[5],planType:r[6],month:r[7],bdm:r[8],am:r[9],
+    discount:r[10]||0,bcaInPlan:r[11]||0,cgmCount:r[12]||0,cgmType:r[13]||'',
+    trackySensors:r[14]||0,carepay:r[15]||0,invoice:r[16]||0,
+    planCategory:pn.startsWith('MAMILY')?'Mamily':pn.startsWith('Comprehensive')?'Comprehensive':pn.startsWith('Doctor')?'Doctor':'Other'};
+}
+function parseSCRow(r){
+  return{state:r[0],team:r[1],condition:r[2]||'Other',duration:r[3],endorser:r[4],month:r[5],
+    bdm:r[6],am:r[7],discount:r[8]||0,bcaInPlan:r[9]||0,cgmCount:r[10]||0,
+    cgmType:r[11]||'',trackySensors:r[12]||0,invoice:r[13]||0,
+    planType:'B2C',planCategory:'Smart CGM',carepay:0,planName:'Smart CGM'};
+}
+const ALL_CP=CARE_PLAN_RAW.map(parseCPRow);
+const ALL_SC=SMART_CGM_RAW.map(parseSCRow);
 
-// ─── COLORS ──────────────────────────────────────────────────────────────────
-const PALETTE = {
-  teal: "#00C9A7", coral: "#FF6B6B", amber: "#FFD93D",
-  blue: "#4ECDC4", purple: "#C084FC", indigo: "#818CF8",
-  rose: "#FB7185", lime: "#A3E635", orange: "#FB923C",
-};
-const CHART_COLORS = Object.values(PALETTE);
-const CGM_COLORS = { Abbott: "#3B82F6", Tracky: "#10B981", Libre2: "#F59E0B", None: "#94A3B8" };
+// ── STATE ────────────────────────────────────────────────────────────
+let sheet='cp', activeTab='ov', filtered=[];
+function getAll(){
+  if(sheet==='cp') return ALL_CP;
+  if(sheet==='sc') return ALL_SC;
+  // combined - add source tag
+  var cp=ALL_CP.map(function(d){var x=Object.assign({},d);x._src='CP';return x;});
+  var sc=ALL_SC.map(function(d){var x=Object.assign({},d);x._src='SC';return x;});
+  return cp.concat(sc);
+}
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-const fmt = (n) => n >= 100000 ? '\u20b9' + (n/100000).toFixed(1) + 'L' : n >= 1000 ? '\u20b9' + (n/1000).toFixed(0) + 'K' : '\u20b9' + n;
-const groupBy = (arr, key) => arr.reduce((acc, item) => {
-  const k = typeof key === "function" ? key(item) : item[key];
-  if (!acc[k]) acc[k] = [];
-  acc[k].push(item);
-  return acc;
-}, {});
-const sumBy = (arr, key) => arr.reduce((s, i) => s + (i[key]||0), 0);
-const countBy = (arr, key) => {
-  const g = groupBy(arr, key);
-  return Object.entries(g).map(([name, items]) => ({ name, count: items.length, revenue: sumBy(items, "invoice") })).sort((a,b)=>b.count-a.count);
-};
+// ── FILTERS ──────────────────────────────────────────────────────────
+function buildFilters(){
+  const all=getAll();
+  function fill(id,vals,cur,lbl){
+    const s=el(id); s.innerHTML='<option value="">'+lbl+'</option>';
+    vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v.replace('_26','');if(v===cur)o.selected=true;s.appendChild(o);});
+  }
+  fill('fm',uniq(all,'month'),el('fm').value,'All Months');
+  fill('fs',uniq(all,'state'),el('fs').value,'All States');
+  fill('fa',uniq(all,'am').filter(Boolean),el('fa').value,'All AMs');
+  fill('fb',uniq(all,'bdm').filter(Boolean),el('fb').value,'All BDMs');
+  // Also populate BDM Deep Dive selector
+  var fb2=el('fb2');
+  if(fb2){
+    var curBdm=fb2.value;
+    fb2.innerHTML='<option value="">-- Select a BDM --</option>';
+    var allBdms=uniq(getAll(),'bdm').filter(Boolean);
+    allBdms.forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;if(v===curBdm)o.selected=true;fb2.appendChild(o);});
+  }
+}
+function applyFilters(){
+  var all=getAll(), m=el('fm').value, s=el('fs').value, a=el('fa').value, b=el('fb').value;
+  filtered=all.filter(function(d){return(!m||d.month===m)&&(!s||d.state===s)&&(!a||d.am===a)&&(!b||d.bdm===b);});
+  el('rc').textContent=filtered.length+' records'+(sheet==='all'?' (Combined)':sheet==='cp'?' (Care Plan)':' (Smart CGM)');
+  render();
+}
+function switchSheet(s){
+  sheet=s;
+  el('btn-cp').className='tbtn '+(s==='cp'?'on':'off');
+  el('btn-sc').className='tbtn '+(s==='sc'?'on':'off');
+  el('btn-all').className='tbtn '+(s==='all'?'on':'off');
+  el('fm').value='';el('fs').value='';el('fa').value='';el('fb').value='';
+  buildFilters();applyFilters();
+}
+function switchTab(t,btn){
+  activeTab=t;
+  document.querySelectorAll('.tp').forEach(x=>x.className='tp');
+  document.querySelectorAll('.tab').forEach(x=>x.className='tab');
+  el('tp-'+t).className='tp on';
+  btn.className='tab on';
+  renderTab();
+}
 
-// ─── STAT CARD ────────────────────────────────────────────────────────────────
-const StatCard = ({ label, value, sub, color }) => (
-  <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid " + color + "30", borderRadius: 12, padding: "16px 20px", borderLeft: "4px solid " + color }}>
-    <div style={{ color: "#94A3B8", fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
-    <div style={{ color: "#F1F5F9", fontSize: 26, fontWeight: 700, lineHeight: 1 }}>{value}</div>
-    {sub && <div style={{ color: color, fontSize: 12, marginTop: 4 }}>{sub}</div>}
-  </div>
-);
+// ── DRAW: bar chart (horizontal) ─────────────────────────────────────
+function drawBars(id,data,valKey,color){
+  const c=el(id);if(!c)return;
+  const items=data.slice(0,10),max=Math.max(...items.map(d=>d[valKey]),1);
+  c.innerHTML=items.map(function(d,i){
+    var bg=typeof color==='function'?color(i):color;
+    var val=valKey==='rev'?fmt(d[valKey]):d[valKey];
+    var pct=(d[valKey]/max*100).toFixed(1);
+    return '<div class="brow"><div class="blbl" title="'+d.name+'">'+(d.name||'').slice(0,13)+'</div><div class="btrack"><div class="bfill" style="width:'+pct+'%;background:'+bg+'"></div><span class="bv">'+val+'</span></div></div>';
+  }).join('');
+}
 
-// ─── CHART CARD ───────────────────────────────────────────────────────────────
-const ChartCard = ({ title, children }) => (
-  <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "20px 16px" }}>
-    <div style={{ color: "#CBD5E1", fontSize: 13, fontWeight: 700, letterSpacing: 0.5, marginBottom: 16, textTransform: "uppercase" }}>{title}</div>
-    {children}
-  </div>
-);
-
-const TT = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 8, padding: "10px 14px", fontSize: 12 }}>
-      <div style={{ color: "#94A3B8", marginBottom: 4 }}>{label}</div>
-      {payload.map((p, i) => <div key={i} style={{ color: p.color || "#F1F5F9" }}>{p.name}: {p.name?.includes("revenue") || p.name?.includes("Revenue") || p.name?.includes("Invoice") ? fmt(p.value) : p.value?.toLocaleString()}</div>)}
-    </div>
-  );
-};
-
-// ─── MAIN DASHBOARD ──────────────────────────────────────────────────────────
-function Dashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [activeSheet, setActiveSheet] = useState("carePlan");
-  const [filterMonth, setFilterMonth] = useState("All");
-  const [filterState, setFilterState] = useState("All");
-  const [filterAM, setFilterAM] = useState("All");
-
-  const data = activeSheet === "carePlan" ? CP : SC;
-
-  const filtered = useMemo(() => {
-    return data.filter(d =>
-      (filterMonth === "All" || d.month === filterMonth) &&
-      (filterState === "All" || d.state === filterState) &&
-      (filterAM === "All" || d.am === filterAM)
-    );
-  }, [data, filterMonth, filterState, filterAM]);
-
-  const months = [...new Set(data.map(d => d.month))].sort();
-  const states = [...new Set(data.map(d => d.state))].sort();
-  const ams = [...new Set(data.map(d => d.am).filter(Boolean))].sort();
-
-  // KPIs
-  const totalRevenue = sumBy(filtered, "invoice");
-  const totalCarepay = activeSheet === "carePlan" ? sumBy(filtered, "carepay") : 0;
-  const totalDiscount = sumBy(filtered, "discount");
-  const totalCGM = sumBy(filtered, "cgmCount");
-  const withBCA = filtered.filter(d => d.bcaInPlan > 0).length;
-  const bcaPct = filtered.length ? Math.round(withBCA / filtered.length * 100) : 0;
-  const avgInvoice = filtered.length ? Math.round(totalRevenue / filtered.filter(d=>d.invoice>0).length) : 0;
-  const janData = filtered.filter(d=>d.month==="Jan_26");
-  const febData = filtered.filter(d=>d.month==="Feb_26");
-  const growthPct = janData.length ? Math.round((febData.length - janData.length)/janData.length*100) : 0;
-
-  // Chart data
-  const byState = countBy(filtered, "state").slice(0, 10);
-  const byCondition = countBy(filtered, "condition");
-  const byAM = countBy(filtered, "am").filter(d=>d.name).slice(0, 10);
-  const byMonth = months.map(m => {
-    const md = filtered.filter(d => d.month === m);
-    return { month: m.replace("_26",""), count: md.length, revenue: sumBy(md, "invoice") };
+// ── DRAW: pie chart ──────────────────────────────────────────────────
+function drawPie(cvId,legId,data,colors){
+  const cv=el(cvId);if(!cv)return;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H/2,r=Math.min(W,H)/2-6;
+  ctx.clearRect(0,0,W,H);
+  const total=data.reduce((s,d)=>s+d.value,0);if(!total)return;
+  let a=-Math.PI/2;
+  data.forEach((d,i)=>{
+    const sl=d.value/total*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+sl);ctx.closePath();
+    ctx.fillStyle=colors[i%colors.length];ctx.fill();a+=sl;
   });
-  const cgmDist = (() => {
-    const g = groupBy(filtered.filter(d=>d.cgmType && d.cgmType !== "None" && d.cgmType !== ""), "cgmType");
-    return Object.entries(g).map(([n,v]) => ({ name: n, value: v.length }));
-  })();
-  const byDuration = (() => {
-    const g = groupBy(filtered, "duration");
-    return Object.entries(g).map(([n,v]) => ({ duration: n+"M", count: v.length, revenue: sumBy(v,"invoice") })).sort((a,b)=>Number(a.duration)-Number(b.duration));
-  })();
-  const byTeam = countBy(filtered, "team");
-  const byBDM = countBy(filtered, "bdm").filter(d=>d.name).slice(0,10);
-  const byPlanType = activeSheet === "carePlan" ? countBy(filtered, "planType") : [];
-  const byPlanCat = activeSheet === "carePlan" ? countBy(filtered, "planCategory") : [];
+  if(legId){
+    el(legId).innerHTML=data.map(function(d,i){
+    return '<div class="pli"><div class="pdot" style="background:'+colors[i%colors.length]+'"></div>'+d.name+': <b style="color:#F1F5F9;margin-left:3px">'+d.value+'</b></div>';
+  }).join('');
+  }
+}
 
-  const tabs = [
-    { id:"overview", label:"Overview" },
-    { id:"geo", label:"Geography" },
-    { id:"sales", label:"Sales Team" },
-    { id:"product", label:"Product Mix" },
-    { id:"cgm", label:"CGM Analysis" },
+// ── DRAW: vertical bar canvas ────────────────────────────────────────
+function drawVBar(id,labels,datasets,opts){
+  const cv=el(id);if(!cv)return;
+  cv.width=cv.parentElement.clientWidth-32||400;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const pd={t:10,r:10,b:55,l:58};
+  const cW=W-pd.l-pd.r,cH=H-pd.t-pd.b;
+  ctx.clearRect(0,0,W,H);
+  const allV=datasets.flatMap(d=>d.data);
+  const maxV=Math.max(...allV,1);
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pd.t+cH-(i/4)*cH;
+    ctx.beginPath();ctx.moveTo(pd.l,y);ctx.lineTo(pd.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#64748B';ctx.font='9px sans-serif';ctx.textAlign='right';
+    ctx.fillText(opts&&opts.fy?opts.fy(maxV*i/4):Math.round(maxV*i/4),pd.l-3,y+3);
+  }
+  // bars
+  const nG=labels.length,nD=datasets.length,gW=cW/nG;
+  const bW=Math.min(gW/nD*0.75,38);
+  datasets.forEach((ds,di)=>{
+    ds.data.forEach((v,gi)=>{
+      const x=pd.l+gi*gW+(gW-nD*bW)/2+di*bW;
+      const bH=(v/maxV)*cH,y=pd.t+cH-bH;
+      ctx.fillStyle=ds.color;
+      ctx.beginPath();ctx.roundRect(x,y,bW-2,bH,[3,3,0,0]);ctx.fill();
+    });
+  });
+  // x labels
+  ctx.fillStyle='#64748B';ctx.font='9px sans-serif';ctx.textAlign='center';
+  labels.forEach((l,i)=>{
+    const x=pd.l+i*gW+gW/2,txt=l.toString().replace('_26','').slice(0,11);
+    ctx.save();ctx.translate(x,pd.t+cH+10);ctx.rotate(-0.35);ctx.fillText(txt,0,0);ctx.restore();
+  });
+}
+
+// ── DRAW: stacked bar ────────────────────────────────────────────────
+function drawStack(id,labels,datasets){
+  const cv=el(id);if(!cv)return;
+  cv.width=cv.parentElement.clientWidth-32||400;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const pd={t:10,r:8,b:55,l:36};
+  const cW=W-pd.l-pd.r,cH=H-pd.t-pd.b;
+  ctx.clearRect(0,0,W,H);
+  const totals=labels.map((_,i)=>datasets.reduce((s,d)=>s+(d.data[i]||0),0));
+  const maxV=Math.max(...totals,1);
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pd.t+cH-(i/4)*cH;
+    ctx.beginPath();ctx.moveTo(pd.l,y);ctx.lineTo(pd.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#64748B';ctx.font='9px sans-serif';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV*i/4),pd.l-2,y+3);
+  }
+  const bW=Math.min(cW/labels.length*0.6,42);
+  labels.forEach((l,i)=>{
+    const x=pd.l+i*(cW/labels.length)+(cW/labels.length-bW)/2;
+    let sy=pd.t+cH;
+    datasets.forEach(ds=>{
+      const v=ds.data[i]||0,h=(v/maxV)*cH;
+      sy-=h;ctx.fillStyle=ds.color;ctx.fillRect(x,sy,bW,h);
+    });
+    ctx.fillStyle='#64748B';ctx.font='9px sans-serif';ctx.textAlign='center';
+    ctx.save();ctx.translate(x+bW/2,pd.t+cH+10);ctx.rotate(-0.35);ctx.fillText(l.toString().slice(0,10),0,0);ctx.restore();
+  });
+  // legend
+  const leg=document.createElement('div');
+  leg.style.cssText='display:flex;flex-wrap:wrap;gap:10px;margin-top:8px';
+  leg.innerHTML=datasets.map(function(d){return '<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#94A3B8"><div style="width:10px;height:10px;background:'+d.color+';border-radius:2px"></div>'+d.label+'</div>';}).join('');
+  const parent=cv.parentElement;
+  const old=parent.querySelector('.stack-leg');if(old)old.remove();
+  leg.className='stack-leg';parent.appendChild(leg);
+}
+
+// ── DRAW: line chart ─────────────────────────────────────────────────
+function drawLine(id,labels,ds0,ds1){
+  const cv=el(id);if(!cv)return;
+  cv.width=cv.parentElement.clientWidth-32||400;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const pd={t:15,r:58,b:38,l:50};
+  const cW=W-pd.l-pd.r,cH=H-pd.t-pd.b;
+  ctx.clearRect(0,0,W,H);
+  if(labels.length<2){ctx.fillStyle='#64748B';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('Select All Months to see trend',W/2,H/2);return;}
+  const max0=Math.max(...ds0.data,1),max1=Math.max(...ds1.data,1);
+  // grid + left axis
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pd.t+cH-(i/4)*cH;
+    ctx.beginPath();ctx.moveTo(pd.l,y);ctx.lineTo(pd.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#64748B';ctx.font='9px sans-serif';ctx.textAlign='right';
+    ctx.fillText(Math.round(max0*i/4),pd.l-3,y+3);
+    // right axis revenue
+    ctx.textAlign='left';ctx.fillStyle='#FF6B6B';
+    ctx.fillText(fmt(max1*i/4),pd.l+cW+3,y+3);
+  }
+  // draw each dataset
+  [[ds0,max0],[ds1,max1]].forEach(([ds,mx])=>{
+    ctx.strokeStyle=ds.color;ctx.lineWidth=2.5;ctx.beginPath();
+    ds.data.forEach((v,i)=>{
+      const x=pd.l+i*(cW/(labels.length-1)),y=pd.t+cH-(v/mx)*cH;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    ds.data.forEach((v,i)=>{
+      const x=pd.l+i*(cW/(labels.length-1)),y=pd.t+cH-(v/mx)*cH;
+      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle=ds.color;ctx.fill();
+    });
+  });
+  // x labels
+  ctx.fillStyle='#64748B';ctx.font='10px sans-serif';ctx.textAlign='center';
+  labels.forEach((l,i)=>{const x=pd.l+i*(cW/(labels.length-1));ctx.fillText(l.replace('_26',''),x,pd.t+cH+16);});
+  // legend
+  ctx.font='10px sans-serif';
+  [[ds0,'#00C9A7'],[ds1,'#FF6B6B']].forEach(([d,c],i)=>{
+    ctx.fillStyle=c;ctx.fillRect(pd.l+i*90,H-11,9,9);ctx.fillText(d.label,pd.l+i*90+12,H-3);
+  });
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────
+function render(){renderTab();}
+function renderTab(){
+  if(activeTab==='ov')renderOv();
+  else if(activeTab==='ge')renderGe();
+  else if(activeTab==='sa')renderSa();
+  else if(activeTab==='pr')renderPr();
+  else if(activeTab==='cg')renderCg();
+  else if(activeTab==='bdm')renderBdm();
+}
+
+function renderOv(){
+  const tot=sumBy(filtered,'invoice'),cp=sheet==='cp'?sumBy(filtered,'carepay'):0;
+  const disc=sumBy(filtered,'discount'),cgm=sumBy(filtered,'cgmCount');
+  const bca=filtered.filter(d=>d.bcaInPlan>0).length;
+  const bcaP=filtered.length?Math.round(bca/filtered.length*100):0;
+  const inv=filtered.filter(d=>d.invoice>0);
+  const avg=inv.length?Math.round(sumBy(inv,'invoice')/inv.length):0;
+  const jan=filtered.filter(d=>d.month==='Jan_26').length;
+  const feb=filtered.filter(d=>d.month==='Feb_26').length;
+  const grow=jan?Math.round((feb-jan)/jan*100):0;
+  const kpis=[
+    {l:'Records',v:filtered.length,s:(grow>=0?'+':'')+grow+'% MoM',c:'#00C9A7'},
+    {l:'Revenue',v:fmt(tot),s:'Total invoice',c:'#FF6B6B'},
+    ...(sheet==='cp'?[{l:'Carepay',v:fmt(cp),s:'3rd party',c:'#C084FC'}]:[]),
+    {l:'Discount',v:fmt(disc),s:'Given total',c:'#FFD93D'},
+    {l:'CGMs',v:cgm,s:'Issued',c:'#4ECDC4'},
+    {l:'BCA Rate',v:bcaP+'%',s:bca+' plans',c:'#818CF8'},
+    {l:'Avg Invoice',v:fmt(avg),s:'Per patient',c:'#FB7185'},
   ];
+  el('kgrid').innerHTML=kpis.map(function(k){return '<div class="kcard" style="background:rgba(255,255,255,.05);border-color:'+k.c+'"><div class="klabel">'+k.l+'</div><div class="kval">'+k.v+'</div><div class="ksub" style="color:'+k.c+'">'+k.s+'</div></div>';}).join('');
+  // Trend
+  const months=uniq(getAll(),'month');
+  const td=months.map(m=>{const md=filtered.filter(d=>d.month===m);return{m,cnt:md.length,rev:sumBy(md,'invoice')};});
+  drawLine('cv-trend',td.map(d=>d.m),{label:'Count',color:'#00C9A7',data:td.map(d=>d.cnt)},{label:'Revenue',color:'#FF6B6B',data:td.map(d=>d.rev)});
+  // Condition
+  drawBars('d-cond',countBy(filtered,'condition'),'count',i=>C[i%C.length]);
+  // Pies
+  const teams=countBy(filtered,'team');
+  drawPie('cv-team','pl-team',teams.map(d=>({name:d.name,value:d.count})),C);
+  if(sheet==='cp'){
+    el('card-b2b').style.display='';
+    const types=countBy(filtered,'planType');
+    drawPie('cv-b2b','pl-b2b',types.map(d=>({name:d.name,value:d.count})),['#00C9A7','#FF6B6B']);
+  } else el('card-b2b').style.display='none';
+  const cats=sheet==='cp'?countBy(filtered,'planCategory'):[{name:'Smart CGM',count:filtered.length}];
+  drawPie('cv-cat','pl-cat',cats.map(d=>({name:d.name,value:d.count})),C);
+}
 
-  return (
-    <div style={{ fontFamily:"'DM Sans', 'Segoe UI', sans-serif", background:"#0F172A", minHeight:"100vh", color:"#F1F5F9", padding: "0 0 40px" }}>
-      {/* HEADER */}
-      <div style={{ background:"linear-gradient(135deg, #1E293B 0%, #0F172A 100%)", borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"20px 28px 0" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12, marginBottom:16 }}>
-          <div>
-            <h1 style={{ margin:0, fontSize:22, fontWeight:800, color:"#F8FAFC", letterSpacing:-0.5 }}>
-              <span style={{ color: PALETTE.teal }}>●</span> Health Analytics Dashboard
-            </h1>
-            <p style={{ margin:"4px 0 0", fontSize:12, color:"#64748B" }}>Jan 2026 – Feb 2026 · Live Data</p>
-          </div>
-          {/* Sheet toggle */}
-          <div style={{ display:"flex", gap:8 }}>
-            {["carePlan","smartCGM"].map(s => (
-              <button key={s} onClick={()=>{ setActiveSheet(s); setFilterState("All"); setFilterMonth("All"); setFilterAM("All"); }}
-                style={{ padding:"8px 18px", borderRadius:8, border:"none", cursor:"pointer", fontSize:13, fontWeight:600,
-                  background: activeSheet===s ? PALETTE.teal : "rgba(255,255,255,0.07)",
-                  color: activeSheet===s ? "#0F172A" : "#94A3B8" }}>
-                {s==="carePlan" ? "Care Plan" : "Smart CGM"}
-              </button>
-            ))}
-          </div>
-        </div>
+function renderGe(){
+  const bySt=countBy(filtered,'state');
+  drawBars('d-st-c',bySt,'count',i=>C[i%C.length]);
+  drawBars('d-st-r',[...bySt].sort((a,b)=>b.rev-a.rev),'rev',i=>C[(i+3)%C.length]);
+  el('t-st').innerHTML='<thead><tr>'+['State','Count','Revenue','Avg Invoice','CGMs','Discounts'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
+    bySt.map(r=>{
+      const sd=filtered.filter(d=>d.state===r.name);
+      const inv=sd.filter(d=>d.invoice>0);
+      const avg=inv.length?Math.round(sumBy(inv,'invoice')/inv.length):0;
+      return '<tr><td style="color:#CBD5E1;font-weight:600">'+r.name+'</td><td style="color:#00C9A7;font-weight:700">'+r.count+'</td><td>'+fmt(r.rev)+'</td><td style="color:#94A3B8">'+fmt(avg)+'</td><td style="color:#94A3B8">'+sumBy(sd,'cgmCount')+'</td><td style="color:#FFD93D">'+sd.filter(function(d){return d.discount>0;}).length+'</td></tr>';
+    }).join('')+'</tbody>';
+}
 
-        {/* Filters */}
-        <div style={{ display:"flex", gap:12, flexWrap:"wrap", paddingBottom:16 }}>
-          {[
-            { label:"Month", val:filterMonth, set:setFilterMonth, opts:["All",...months] },
-            { label:"State", val:filterState, set:setFilterState, opts:["All",...states] },
-            { label:"AM", val:filterAM, set:setFilterAM, opts:["All",...ams] },
-          ].map(f => (
-            <select key={f.label} value={f.val} onChange={e=>f.set(e.target.value)}
-              style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:8, color:"#CBD5E1", padding:"6px 12px", fontSize:12, cursor:"pointer" }}>
-              {f.opts.map(o => <option key={o} value={o} style={{background:"#1E293B"}}>{f.label==="Month"&&o!=="All"?o.replace("_26",""):o}</option>)}
-            </select>
-          ))}
-          <span style={{ marginLeft:"auto", color:"#64748B", fontSize:12, alignSelf:"center" }}>{filtered.length} records</span>
-        </div>
+function renderSa(){
+  const byAM=countBy(filtered,'am').filter(d=>d.name);
+  drawBars('d-am-c',byAM,'count',i=>C[i%C.length]);
+  drawBars('d-bdm',countBy(filtered,'bdm').filter(d=>d.name),'count',i=>C[(i+2)%C.length]);
+  const sorted=[...byAM].sort((a,b)=>b.rev-a.rev);
+  el('t-am').innerHTML='<thead><tr>'+['#','AM','Patients','Revenue','Avg Invoice','Carepay','Discount','BCA%'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
+    sorted.map((r,i)=>{
+      const ad=filtered.filter(d=>d.am===r.name);
+      const inv=ad.filter(d=>d.invoice>0);
+      const avg=inv.length?Math.round(sumBy(inv,'invoice')/inv.length):0;
+      const bca=Math.round(ad.filter(d=>d.bcaInPlan>0).length/ad.length*100);
+      var rankColor=i<3?'#FFD93D':'#475569';
+      var carepayVal=sheet==='cp'?fmt(sumBy(ad,'carepay')):'\u2014';
+      var bcaColor=bca>50?'#A3E635':'#94A3B8';
+      return '<tr><td style="color:'+rankColor+';font-weight:700">#'+(i+1)+'</td><td style="color:#CBD5E1;font-weight:600">'+r.name+'</td><td style="color:#00C9A7;font-weight:700">'+r.count+'</td><td style="font-weight:600">'+fmt(r.rev)+'</td><td style="color:#94A3B8">'+fmt(avg)+'</td><td style="color:#C084FC">'+carepayVal+'</td><td style="color:#FB7185">'+fmt(sumBy(ad,'discount'))+'</td><td style="color:'+bcaColor+'">'+bca+'%</td></tr>';
+    }).join('')+'</tbody>';
+}
 
-        {/* Tabs */}
-        <div style={{ display:"flex", gap:4 }}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={()=>setActiveTab(t.id)}
-              style={{ padding:"10px 18px", border:"none", cursor:"pointer", fontSize:13, fontWeight:600, borderRadius:"8px 8px 0 0",
-                background: activeTab===t.id ? "rgba(0,201,167,0.15)" : "transparent",
-                color: activeTab===t.id ? PALETTE.teal : "#64748B",
-                borderBottom: activeTab===t.id ? "2px solid " + PALETTE.teal : "2px solid transparent" }}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+function renderPr(){
+  const g=groupBy(filtered,'duration');
+  const durs=Object.entries(g).map(([n,v])=>({dur:n+'M',count:v.length,rev:sumBy(v,'invoice')})).sort((a,b)=>parseInt(a.dur)-parseInt(b.dur));
+  drawVBar('cv-dc',durs.map(d=>d.dur),[{label:'Patients',color:'#00C9A7',data:durs.map(d=>d.count)}]);
+  drawVBar('cv-dr',durs.map(d=>d.dur),[{label:'Revenue',color:'#4ECDC4',data:durs.map(d=>d.rev)}],{fy:fmt});
+  if(sheet==='cp'){
+    const tot=sumBy(filtered,'invoice'),cp=sumBy(filtered,'carepay'),disc=sumBy(filtered,'discount');
+    var revItems=[{l:'Total Invoice',v:tot,c:'#00C9A7'},{l:'Carepay (3rd Party)',v:cp,c:'#C084FC'},{l:'Direct Patient Pay',v:tot-cp,c:'#FF6B6B'},{l:'Total Discount',v:disc,c:'#FFD93D'}];
+    var revHTML=revItems.map(function(x){return '<div class="mrow"><span class="mlbl">'+x.l+'</span><span class="mval" style="color:'+x.c+'">'+fmt(x.v)+'</span></div><div class="pb"><div class="pf" style="width:'+Math.min(100,tot?x.v/tot*100:0).toFixed(1)+'%;background:'+x.c+'"></div></div>';}).join('');
+    el('pr-extra').innerHTML='<div class="cc"><div class="ct">Plan Name Distribution</div><div id="d-pln"></div></div><div class="cc"><div class="ct">Revenue Breakdown</div><div style="padding:8px 0">'+revHTML+'</div></div>';
+    drawBars('d-pln',countBy(filtered,'planName').slice(0,8),'count',i=>C[i%C.length]);
+  } else el('pr-extra').innerHTML='';
+}
 
-      <div style={{ padding:"24px 28px" }}>
-        {/* ── OVERVIEW ── */}
-        {activeTab === "overview" && (
-          <div>
-            {/* KPI Cards */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(160px,1fr))", gap:14, marginBottom:24 }}>
-              <StatCard label="Total Records" value={filtered.length.toLocaleString()} sub={"+"+growthPct+"% MoM"} color={PALETTE.teal} />
-              <StatCard label="Total Revenue" value={fmt(totalRevenue)} sub="Invoice amount" color={PALETTE.coral} />
-              {activeSheet==="carePlan" && <StatCard label="Carepay Amount" value={fmt(totalCarepay)} sub="3rd party financed" color={PALETTE.purple} />}
-              <StatCard label="Total Discount" value={fmt(totalDiscount)} sub="Given to patients" color={PALETTE.amber} />
-              <StatCard label="Total CGMs" value={totalCGM.toLocaleString()} sub="Sensors issued" color={PALETTE.blue} />
-              <StatCard label="BCA Attachment" value={bcaPct+"%"} sub={withBCA+" plans"} color={PALETTE.indigo} />
-              <StatCard label="Avg Invoice" value={fmt(avgInvoice)} sub="Per patient" color={PALETTE.rose} />
-            </div>
-
-            {/* Month trend + Condition */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
-              <ChartCard title="Monthly Trend – Count & Revenue">
-                <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={byMonth}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="month" tick={{ fill:"#64748B", fontSize:11 }} />
-                    <YAxis yAxisId="left" tick={{ fill:"#64748B", fontSize:10 }} />
-                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>fmt(v)} tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Legend wrapperStyle={{ fontSize:11, color:"#94A3B8" }} />
-                    <Line yAxisId="left" type="monotone" dataKey="count" name="Count" stroke={PALETTE.teal} strokeWidth={2} dot={{ r:5, fill:PALETTE.teal }} />
-                    <Line yAxisId="right" type="monotone" dataKey="revenue" name="Revenue" stroke={PALETTE.coral} strokeWidth={2} dot={{ r:5, fill:PALETTE.coral }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="By Condition">
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={byCondition} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                    <XAxis type="number" tick={{ fill:"#64748B", fontSize:10 }} />
-                    <YAxis type="category" dataKey="name" width={90} tick={{ fill:"#94A3B8", fontSize:11 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="count" name="Patients" radius={[0,4,4,0]}>
-                      {byCondition.map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-
-            {/* Plan type & B2B/B2C */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
-              <ChartCard title="Team Split">
-                <ResponsiveContainer width="100%" height={180}>
-                  <PieChart>
-                    <Pie data={byTeam} cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name" label={({name,count})=>name+": "+count} labelLine={false} fontSize={10}>
-                      {byTeam.map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip content={<TT/>} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              {activeSheet === "carePlan" && (
-                <ChartCard title="B2B vs B2C">
-                  <ResponsiveContainer width="100%" height={180}>
-                    <PieChart>
-                      <Pie data={byPlanType} cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name"
-                        label={({ name, count, percent }) => name+": "+(percent*100).toFixed(0)+"%"} labelLine fontSize={10}>
-                        {byPlanType.map((_, i) => <Cell key={i} fill={[PALETTE.teal, PALETTE.coral][i%2]} />)}
-                      </Pie>
-                      <Tooltip content={<TT/>} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              )}
-
-              <ChartCard title="Plan Category">
-                <ResponsiveContainer width="100%" height={180}>
-                  <PieChart>
-                    <Pie data={activeSheet==="carePlan" ? byPlanCat : [{name:"Smart CGM", count:filtered.length}]}
-                      cx="50%" cy="50%" outerRadius={70} dataKey="count" nameKey="name"
-                      label={({name,count})=>name+": "+count} labelLine fontSize={9}>
-                      {(activeSheet==="carePlan" ? byPlanCat : [{name:"Smart CGM"}]).map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip content={<TT/>} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-          </div>
-        )}
-
-        {/* ── GEOGRAPHY ── */}
-        {activeTab === "geo" && (
-          <div>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
-              <ChartCard title="Top States – Patient Count">
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={byState}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="name" tick={{ fill:"#64748B", fontSize:9 }} angle={-30} textAnchor="end" height={60} />
-                    <YAxis tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="count" name="Patients" radius={[4,4,0,0]}>
-                      {byState.map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="Top States – Revenue">
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={byState.sort((a,b)=>b.revenue-a.revenue).slice(0,10)} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                    <XAxis type="number" tickFormatter={fmt} tick={{ fill:"#64748B", fontSize:9 }} />
-                    <YAxis type="category" dataKey="name" width={95} tick={{ fill:"#94A3B8", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="revenue" name="Revenue" radius={[0,4,4,0]}>
-                      {byState.map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-
-            {/* State table */}
-            <ChartCard title="State Breakdown – Full Table">
-              <div style={{ overflowX:"auto" }}>
-                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
-                  <thead>
-                    <tr style={{ borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
-                      {["State","Count","Revenue","Avg Invoice","Total CGM","With Discount"].map(h=>(
-                        <th key={h} style={{ textAlign:"left", padding:"8px 12px", color:"#64748B", fontWeight:700, fontSize:11, textTransform:"uppercase" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {countBy(filtered,"state").map((r,i) => {
-                      const sd = filtered.filter(d=>d.state===r.name);
-                      const cgm = sumBy(sd,"cgmCount");
-                      const disc = sd.filter(d=>d.discount>0).length;
-                      const avg = sd.filter(d=>d.invoice>0).length ? Math.round(sumBy(sd,"invoice")/sd.filter(d=>d.invoice>0).length) : 0;
-                      return (
-                        <tr key={i} style={{ borderBottom:"1px solid rgba(255,255,255,0.04)", background: i%2===0?"transparent":"rgba(255,255,255,0.02)" }}>
-                          <td style={{ padding:"9px 12px", color:"#CBD5E1", fontWeight:500 }}>{r.name}</td>
-                          <td style={{ padding:"9px 12px", color: PALETTE.teal, fontWeight:700 }}>{r.count}</td>
-                          <td style={{ padding:"9px 12px", color:"#F1F5F9" }}>{fmt(r.revenue)}</td>
-                          <td style={{ padding:"9px 12px", color:"#94A3B8" }}>{fmt(avg)}</td>
-                          <td style={{ padding:"9px 12px", color:"#94A3B8" }}>{cgm}</td>
-                          <td style={{ padding:"9px 12px", color: disc>0?PALETTE.amber:"#475569" }}>{disc}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </ChartCard>
-          </div>
-        )}
-
-        {/* ── SALES TEAM ── */}
-        {activeTab === "sales" && (
-          <div>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
-              <ChartCard title="AM Performance – Count">
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={byAM} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                    <XAxis type="number" tick={{ fill:"#64748B", fontSize:10 }} />
-                    <YAxis type="category" dataKey="name" width={110} tick={{ fill:"#94A3B8", fontSize:9 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="count" name="Patients" radius={[0,4,4,0]}>
-                      {byAM.map((_, i) => <Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="BDM Performance – Top 10">
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={byBDM} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                    <XAxis type="number" tick={{ fill:"#64748B", fontSize:10 }} />
-                    <YAxis type="category" dataKey="name" width={130} tick={{ fill:"#94A3B8", fontSize:9 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="count" name="Patients" radius={[0,4,4,0]}>
-                      {byBDM.map((_,i)=><Cell key={i} fill={CHART_COLORS[(i+3)%CHART_COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-
-            {/* AM Revenue Table */}
-            <ChartCard title="AM Revenue Leaderboard">
-              <div style={{ overflowX:"auto" }}>
-                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
-                  <thead>
-                    <tr style={{ borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
-                      {["Rank","AM Name","Patients","Revenue","Avg Invoice","Carepay","Discount Given","BCA %"].map(h=>(
-                        <th key={h} style={{ textAlign:"left", padding:"8px 12px", color:"#64748B", fontWeight:700, fontSize:11, textTransform:"uppercase" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {countBy(filtered,"am").filter(r=>r.name).sort((a,b)=>b.revenue-a.revenue).map((r,i)=>{
-                      const ad = filtered.filter(d=>d.am===r.name);
-                      const avg = ad.filter(d=>d.invoice>0).length ? Math.round(sumBy(ad,"invoice")/ad.filter(d=>d.invoice>0).length):0;
-                      const cp = activeSheet==="carePlan" ? sumBy(ad,"carepay") : 0;
-                      const disc = sumBy(ad,"discount");
-                      const bca = Math.round(ad.filter(d=>d.bcaInPlan>0).length/ad.length*100);
-                      return (
-                        <tr key={i} style={{ borderBottom:"1px solid rgba(255,255,255,0.04)", background: i%2===0?"transparent":"rgba(255,255,255,0.02)" }}>
-                          <td style={{ padding:"9px 12px", color: i<3?PALETTE.amber:"#475569", fontWeight:700 }}>#{i+1}</td>
-                          <td style={{ padding:"9px 12px", color:"#CBD5E1", fontWeight:500 }}>{r.name}</td>
-                          <td style={{ padding:"9px 12px", color:PALETTE.teal, fontWeight:700 }}>{r.count}</td>
-                          <td style={{ padding:"9px 12px", color:"#F1F5F9", fontWeight:600 }}>{fmt(r.revenue)}</td>
-                          <td style={{ padding:"9px 12px", color:"#94A3B8" }}>{fmt(avg)}</td>
-                          <td style={{ padding:"9px 12px", color:PALETTE.purple }}>{fmt(cp)}</td>
-                          <td style={{ padding:"9px 12px", color:cp>0?PALETTE.rose:"#475569" }}>{fmt(disc)}</td>
-                          <td style={{ padding:"9px 12px", color: bca>50?PALETTE.lime:"#94A3B8" }}>{bca}%</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </ChartCard>
-          </div>
-        )}
-
-        {/* ── PRODUCT MIX ── */}
-        {activeTab === "product" && (
-          <div>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
-              <ChartCard title="Plan Duration Mix">
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={byDuration}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="duration" tick={{ fill:"#94A3B8", fontSize:11 }} />
-                    <YAxis tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Legend wrapperStyle={{ fontSize:11, color:"#94A3B8" }} />
-                    <Bar dataKey="count" name="Patients" fill={PALETTE.teal} radius={[4,4,0,0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="Revenue by Duration">
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={byDuration}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="duration" tick={{ fill:"#94A3B8", fontSize:11 }} />
-                    <YAxis tickFormatter={fmt} tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="revenue" name="Revenue" radius={[4,4,0,0]}>
-                      {byDuration.map((_,i) => <Cell key={i} fill={CHART_COLORS[(i+2)%CHART_COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-
-            {activeSheet === "carePlan" && (
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-                <ChartCard title="Plan Name Distribution">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={countBy(filtered,"planName").slice(0,8)} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                      <XAxis type="number" tick={{ fill:"#64748B", fontSize:10 }} />
-                      <YAxis type="category" dataKey="name" width={140} tick={{ fill:"#94A3B8", fontSize:9 }} />
-                      <Tooltip content={<TT/>} />
-                      <Bar dataKey="count" name="Plans" radius={[0,4,4,0]}>
-                        {countBy(filtered,"planName").slice(0,8).map((_,i)=><Cell key={i} fill={CHART_COLORS[i%CHART_COLORS.length]} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-
-                <ChartCard title="Carepay vs Direct Revenue">
-                  <div style={{ display:"flex", flexDirection:"column", gap:12, padding:"20px 0" }}>
-                    {[
-                      { label:"Total Invoice", val:totalRevenue, color:PALETTE.teal },
-                      { label:"Carepay (3rd Party)", val:totalCarepay, color:PALETTE.purple },
-                      { label:"Direct Patient Pay", val:totalRevenue-totalCarepay, color:PALETTE.coral },
-                      { label:"Total Discount", val:totalDiscount, color:PALETTE.amber },
-                    ].map(item => (
-                      <div key={item.label}>
-                        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                          <span style={{ color:"#94A3B8", fontSize:12 }}>{item.label}</span>
-                          <span style={{ color:item.color, fontWeight:700, fontSize:14 }}>{fmt(item.val)}</span>
-                        </div>
-                        <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:4, height:8 }}>
-                          <div style={{ background:item.color, width:Math.min(100,item.val/totalRevenue*100)+"%", height:8, borderRadius:4 }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ChartCard>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── CGM ANALYSIS ── */}
-        {activeTab === "cgm" && (
-          <div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14, marginBottom:20 }}>
-              <StatCard label="Total CGMs Issued" value={totalCGM} color={PALETTE.teal} />
-              <StatCard label="Abbott" value={filtered.filter(d=>d.cgmType==="Abbott").length} sub="devices" color={PALETTE.blue} />
-              <StatCard label="Tracky" value={filtered.filter(d=>d.cgmType==="Tracky").length} sub="devices" color={PALETTE.lime} />
-              <StatCard label="Libre2" value={filtered.filter(d=>d.cgmType==="Libre2").length} sub="devices" color={PALETTE.amber} />
-              <StatCard label="Total Tracky Sensors" value={sumBy(filtered,"trackySensors")} color={PALETTE.coral} />
-              <StatCard label="No CGM" value={filtered.filter(d=>!d.cgmType||d.cgmType==="None"||d.cgmType==="").length} color="#475569" />
-            </div>
-
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
-              <ChartCard title="CGM Type Distribution">
-                <ResponsiveContainer width="100%" height={240}>
-                  <PieChart>
-                    <Pie data={cgmDist} cx="50%" cy="50%" outerRadius={90} dataKey="value" nameKey="name"
-                      label={({name,value,percent})=>name+": "+value+" ("+(percent*100).toFixed(0)+"%)"} fontSize={11}>
-                      {cgmDist.map((d,i)=><Cell key={i} fill={CGM_COLORS[d.name]||CHART_COLORS[i%CHART_COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip content={<TT/>} />
-                    <Legend wrapperStyle={{ fontSize:11, color:"#94A3B8" }} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="CGM Type by State – Top 8">
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={
-                    countBy(filtered.filter(d=>d.cgmType&&d.cgmType!=="None"&&d.cgmType!==""),"state")
-                    .slice(0,8).map(s=>{
-                      const sd = filtered.filter(d=>d.state===s.name);
-                      return {
-                        state: s.name.split(" ")[0],
-                        Abbott: sd.filter(d=>d.cgmType==="Abbott").length,
-                        Tracky: sd.filter(d=>d.cgmType==="Tracky").length,
-                        Libre2: sd.filter(d=>d.cgmType==="Libre2").length,
-                      };
-                    })
-                  }>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="state" tick={{ fill:"#64748B", fontSize:9 }} />
-                    <YAxis tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Legend wrapperStyle={{ fontSize:11, color:"#94A3B8" }} />
-                    <Bar dataKey="Abbott" stackId="a" fill={CGM_COLORS.Abbott} />
-                    <Bar dataKey="Tracky" stackId="a" fill={CGM_COLORS.Tracky} />
-                    <Bar dataKey="Libre2" stackId="a" fill={CGM_COLORS.Libre2} radius={[4,4,0,0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="CGM Attachment by Condition">
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={
-                    [...new Set(filtered.map(d=>d.condition))].filter(Boolean).map(cond => {
-                      const cd = filtered.filter(d=>d.condition===cond);
-                      return {
-                        cond: cond.length>10?cond.slice(0,10):cond,
-                        Abbott: cd.filter(d=>d.cgmType==="Abbott").length,
-                        Tracky: cd.filter(d=>d.cgmType==="Tracky").length,
-                        Libre2: cd.filter(d=>d.cgmType==="Libre2").length,
-                      };
-                    })
-                  }>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="cond" tick={{ fill:"#64748B", fontSize:9 }} />
-                    <YAxis tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Legend wrapperStyle={{ fontSize:11, color:"#94A3B8" }} />
-                    <Bar dataKey="Abbott" stackId="a" fill={CGM_COLORS.Abbott} />
-                    <Bar dataKey="Tracky" stackId="a" fill={CGM_COLORS.Tracky} />
-                    <Bar dataKey="Libre2" stackId="a" fill={CGM_COLORS.Libre2} radius={[4,4,0,0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard title="Revenue by CGM Type">
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={
-                    ["Abbott","Tracky","Libre2","None"].map(t=>({
-                      type: t,
-                      revenue: sumBy(filtered.filter(d=>(d.cgmType||"None")===t),"invoice"),
-                      count: filtered.filter(d=>(d.cgmType||"None")===t).length
-                    }))
-                  }>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="type" tick={{ fill:"#64748B", fontSize:11 }} />
-                    <YAxis tickFormatter={fmt} tick={{ fill:"#64748B", fontSize:10 }} />
-                    <Tooltip content={<TT/>} />
-                    <Bar dataKey="revenue" name="Revenue" radius={[4,4,0,0]}>
-                      {["Abbott","Tracky","Libre2","None"].map((t,i)=><Cell key={i} fill={CGM_COLORS[t]||"#475569"} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+function renderCg(){
+  const ab=filtered.filter(d=>d.cgmType==='Abbott').length;
+  const tr=filtered.filter(d=>d.cgmType==='Tracky').length;
+  const li=filtered.filter(d=>d.cgmType==='Libre2').length;
+  const no=filtered.filter(d=>!d.cgmType||d.cgmType==='').length;
+  el('cgm-kgrid').innerHTML=[
+    {l:'Total CGMs',v:sumBy(filtered,'cgmCount'),c:'#00C9A7'},
+    {l:'Abbott',v:ab,s:'devices',c:'#3B82F6'},
+    {l:'Tracky',v:tr,s:'devices',c:'#10B981'},
+    {l:'Libre2',v:li,s:'devices',c:'#F59E0B'},
+    {l:'Tracky Sensors',v:sumBy(filtered,'trackySensors'),c:'#FF6B6B'},
+    {l:'No CGM',v:no,c:'#475569'},
+  ].map(function(k){var sub=k.s?'<div class="ksub" style="color:'+k.c+'">'+k.s+'</div>':'';return '<div class="kcard" style="background:rgba(255,255,255,.05);border-color:'+k.c+'"><div class="klabel">'+k.l+'</div><div class="kval">'+k.v+'</div>'+sub+'</div>';}).join('');
+  const pieD=[{name:'Abbott',value:ab},{name:'Tracky',value:tr},{name:'Libre2',value:li}].filter(d=>d.value>0);
+  drawPie('cv-cgm-pie','pl-cgm',pieD,['#3B82F6','#10B981','#F59E0B']);
+  const topSt=countBy(filtered,'state').slice(0,8).map(s=>s.name);
+  drawStack('cv-cgm-st',topSt,[
+    {label:'Abbott',color:'#3B82F6',data:topSt.map(s=>filtered.filter(d=>d.state===s&&d.cgmType==='Abbott').length)},
+    {label:'Tracky',color:'#10B981',data:topSt.map(s=>filtered.filter(d=>d.state===s&&d.cgmType==='Tracky').length)},
+    {label:'Libre2',color:'#F59E0B',data:topSt.map(s=>filtered.filter(d=>d.state===s&&d.cgmType==='Libre2').length)},
+  ]);
+  const conds=[...new Set(filtered.map(d=>d.condition).filter(Boolean))];
+  drawStack('cv-cgm-co',conds,[
+    {label:'Abbott',color:'#3B82F6',data:conds.map(c=>filtered.filter(d=>d.condition===c&&d.cgmType==='Abbott').length)},
+    {label:'Tracky',color:'#10B981',data:conds.map(c=>filtered.filter(d=>d.condition===c&&d.cgmType==='Tracky').length)},
+    {label:'Libre2',color:'#F59E0B',data:conds.map(c=>filtered.filter(d=>d.condition===c&&d.cgmType==='Libre2').length)},
+  ]);
+  drawVBar('cv-cgm-rv',['Abbott','Tracky','Libre2','None'],[{label:'Revenue',color:'#818CF8',data:[
+    sumBy(filtered.filter(d=>d.cgmType==='Abbott'),'invoice'),
+    sumBy(filtered.filter(d=>d.cgmType==='Tracky'),'invoice'),
+    sumBy(filtered.filter(d=>d.cgmType==='Libre2'),'invoice'),
+    sumBy(filtered.filter(d=>!d.cgmType||d.cgmType===''),'invoice'),
+  ]}],{fy:fmt});
 }
 
 
-    const domRoot = ReactDOM.createRoot(document.getElementById('root'));
-    domRoot.render(React.createElement(Dashboard));
-  </script>
+function renderBdm(){
+  // Populate BDM selector from full dataset (not filtered)
+  var fb2=el('fb2');
+  if(!fb2) return;
+  var allBdms=uniq(ALL_CP.concat(ALL_SC),'bdm').filter(Boolean);
+  if(fb2.options.length<=1){
+    allBdms.forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;fb2.appendChild(o);});
+  }
+  var selBdm=fb2.value;
+  el('bdm-kgrid').innerHTML='';
+  el('bdm-dur').innerHTML='';
+  el('t-bdm-detail').innerHTML='';
+  el('t-bdm-all').innerHTML='';
+  el('bdm-summary').textContent='';
+  if(!selBdm) return;
+
+  // Get both CP and SC records for this BDM (ignoring global filters except month/state)
+  var m=el('fm').value, s=el('fs').value;
+  var cpData=ALL_CP.filter(function(d){return d.bdm===selBdm&&(!m||d.month===m)&&(!s||d.state===s);});
+  var scData=ALL_SC.filter(function(d){return d.bdm===selBdm&&(!m||d.month===m)&&(!s||d.state===s);});
+  var allData=cpData.concat(scData);
+
+  if(!allData.length){el('bdm-summary').textContent='No records found';return;}
+  el('bdm-summary').textContent=allData.length+' total records (CP: '+cpData.length+', Smart CGM: '+scData.length+')';
+
+  // KPI cards
+  var totalRev=sumBy(allData,'invoice');
+  var totalCGM=sumBy(allData,'cgmCount');
+  var totalDisc=sumBy(allData,'discount');
+  var bca=allData.filter(function(d){return d.bcaInPlan>0;}).length;
+  var bcaP=allData.length?Math.round(bca/allData.length*100):0;
+  var inv=allData.filter(function(d){return d.invoice>0;});
+  var avg=inv.length?Math.round(sumBy(inv,'invoice')/inv.length):0;
+  el('bdm-kgrid').innerHTML=[
+    {l:'Total Records',v:allData.length,s:'CP: '+cpData.length+' | SC: '+scData.length,c:'#00C9A7'},
+    {l:'Total Revenue',v:fmt(totalRev),s:'Invoice amount',c:'#FF6B6B'},
+    {l:'Total CGMs',v:totalCGM,s:'Devices issued',c:'#4ECDC4'},
+    {l:'BCA Attachment',v:bcaP+'%',s:bca+' plans',c:'#818CF8'},
+    {l:'Total Discount',v:fmt(totalDisc),s:'Given',c:'#FFD93D'},
+    {l:'Avg Invoice',v:fmt(avg),s:'Per patient',c:'#FB7185'},
+  ].map(function(k){return '<div class="kcard" style="background:rgba(255,255,255,.05);border-color:'+k.c+'"><div class="klabel">'+k.l+'</div><div class="kval">'+k.v+'</div><div class="ksub" style="color:'+k.c+'">'+k.s+'</div></div>';}).join('');
+
+  // Plans by duration horizontal bars
+  var durGroups=groupBy(cpData,'duration');
+  var durs=Object.keys(durGroups).sort(function(a,b){return Number(a)-Number(b);});
+  var durData=durs.map(function(d){return{name:d+'M',count:durGroups[d].length,rev:sumBy(durGroups[d],'invoice')};});
+  drawBars('bdm-dur',durData,'count',function(i){return ['#00C9A7','#4ECDC4','#818CF8','#FB7185','#FFD93D'][i%5];});
+
+  // Device attachment by duration - stacked bar canvas
+  var cv=el('cv-bdm-dev');
+  if(cv){
+    cv.width=cv.parentElement.clientWidth-32||400;
+    drawStack('cv-bdm-dev',durs.map(function(d){return d+'M';}), [
+      {label:'Abbott',color:'#3B82F6',data:durs.map(function(d){return durGroups[d].filter(function(r){return r.cgmType==='Abbott';}).length;})},
+      {label:'Tracky',color:'#10B981',data:durs.map(function(d){return durGroups[d].filter(function(r){return r.cgmType==='Tracky';}).length;})},
+      {label:'Libre2',color:'#F59E0B',data:durs.map(function(d){return durGroups[d].filter(function(r){return r.cgmType==='Libre2';}).length;})},
+      {label:'BCA',color:'#C084FC',data:durs.map(function(d){return durGroups[d].filter(function(r){return r.bcaInPlan>0;}).length;})},
+      {label:'No Device',color:'#475569',data:durs.map(function(d){return durGroups[d].filter(function(r){return (!r.cgmType||r.cgmType==='')&&!r.bcaInPlan;}).length;})},
+    ]);
+  }
+
+  // Duration summary table with device breakdown
+  var th=['Duration','# Plans','Abbott','Tracky','Libre2','BCA','No Device','Device%','BCA%','Avg Invoice','Total Revenue'];
+  el('t-bdm-detail').innerHTML='<thead><tr>'+th.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+
+    durs.map(function(d,di){
+      var rows=durGroups[d];
+      var ab=rows.filter(function(r){return r.cgmType==='Abbott';}).length;
+      var tr=rows.filter(function(r){return r.cgmType==='Tracky';}).length;
+      var li=rows.filter(function(r){return r.cgmType==='Libre2';}).length;
+      var bc=rows.filter(function(r){return r.bcaInPlan>0;}).length;
+      var nd=rows.filter(function(r){return (!r.cgmType||r.cgmType==='')&&!r.bcaInPlan;}).length;
+      var devCount=ab+tr+li;
+      var devPct=rows.length?Math.round(devCount/rows.length*100):0;
+      var bcaPct=rows.length?Math.round(bc/rows.length*100):0;
+      var invArr=rows.filter(function(r){return r.invoice>0;});
+      var avg=invArr.length?Math.round(sumBy(invArr,'invoice')/invArr.length):0;
+      var rev=sumBy(rows,'invoice');
+      var colors=['#00C9A7','#4ECDC4','#818CF8','#FB7185','#FFD93D'];
+      return '<tr style="border-left:3px solid '+colors[di%5]+'">'
+        +'<td style="color:#F1F5F9;font-weight:700">'+d+'M</td>'
+        +'<td style="color:#00C9A7;font-weight:700">'+rows.length+'</td>'
+        +'<td style="color:#3B82F6">'+ab+'<span style="color:#475569;font-size:10px"> ('+(rows.length?Math.round(ab/rows.length*100):0)+'%)</span></td>'
+        +'<td style="color:#10B981">'+tr+'<span style="color:#475569;font-size:10px"> ('+(rows.length?Math.round(tr/rows.length*100):0)+'%)</span></td>'
+        +'<td style="color:#F59E0B">'+li+'<span style="color:#475569;font-size:10px"> ('+(rows.length?Math.round(li/rows.length*100):0)+'%)</span></td>'
+        +'<td style="color:#C084FC">'+bc+'<span style="color:#475569;font-size:10px"> ('+bcaPct+'%)</span></td>'
+        +'<td style="color:#475569">'+nd+'</td>'
+        +'<td><span style="color:'+(devPct>50?'#A3E635':'#FB7185')+'">'+devPct+'%</span></td>'
+        +'<td style="color:'+(bcaPct>30?'#C084FC':'#94A3B8')+'">'+bcaPct+'%</td>'
+        +'<td style="color:#94A3B8">'+fmt(avg)+'</td>'
+        +'<td style="color:#FFD93D;font-weight:600">'+fmt(rev)+'</td>'
+      +'</tr>';
+    }).join('')+'</tbody>';
+
+  // All plans table for this BDM
+  var th2=['Month','State','Patient/Endorser','Plan','Dur','Type','CGM','BCA','Tracky Sensors','Discount','Invoice'];
+  el('t-bdm-all').innerHTML='<thead><tr>'+th2.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+
+    allData.map(function(r){
+      var src=r._src?'<span style="background:'+(r._src==='CP'?'#1E40AF':'#065F46')+';color:#fff;font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px">'+r._src+'</span>':'';
+      var cgmColor=r.cgmType==='Abbott'?'#3B82F6':r.cgmType==='Tracky'?'#10B981':r.cgmType==='Libre2'?'#F59E0B':'#475569';
+      return '<tr>'
+        +'<td style="color:#94A3B8">'+r.month.replace('_26','')+'</td>'
+        +'<td style="color:#CBD5E1">'+r.state+'</td>'
+        +'<td style="color:#F1F5F9;font-size:11px">'+r.endorser+'</td>'
+        +'<td style="color:#CBD5E1;font-size:11px">'+r.planName+src+'</td>'
+        +'<td style="color:#FFD93D;font-weight:700">'+r.duration+'M</td>'
+        +'<td style="color:'+(r.planType==='B2B'?'#818CF8':'#4ECDC4')+'">'+(r.planType||'—')+'</td>'
+        +'<td style="color:'+cgmColor+';font-weight:600">'+(r.cgmType||'—')+(r.cgmCount?' x'+r.cgmCount:'')+'</td>'
+        +'<td style="color:'+(r.bcaInPlan?'#C084FC':'#475569')+'">'+(r.bcaInPlan?'Yes':'No')+'</td>'
+        +'<td style="color:#94A3B8">'+(r.trackySensors||0)+'</td>'
+        +'<td style="color:'+(r.discount>0?'#FB7185':'#475569')+'">'+(r.discount>0?fmt(r.discount):'—')+'</td>'
+        +'<td style="color:#A3E635;font-weight:700">'+fmt(r.invoice)+'</td>'
+      +'</tr>';
+    }).join('')+'</tbody>';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+buildFilters();
+applyFilters();
+window.addEventListener('resize',()=>render());
+
+</script>
 </body>
 </html>
